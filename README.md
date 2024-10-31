@@ -20,6 +20,7 @@ const pager = new DocumentPager({
       },
       style: {
         lineHeight: 1.5,
+        fontFamily: "SimHei",
         fontWeight: "bold",
         textAlign: "center",
       },
@@ -64,6 +65,26 @@ const pager = new DocumentPager({
     },
   },
 });
-const pages = pager.calc();
-// 使用 pages 数据进行分页渲染...
+// 使用结构化数据计算生成分页数据
+const pages = pager.calc([
+  {
+    type: "h1",
+    text: "Hello World",
+  },
+  {
+    type: "h2",
+    text: "Hello Document Pager",
+  },
+  {
+    type: 'p',
+    content: '这是一段测试文本',
+    indent: false
+  },
+  {
+    type: 'p',
+    content: '对于超长文本，Document Pager 会根据 contentMaxWidth 以及 nodeMeta 配置自动进行换行处理。对于超长文本，Document Pager 会根据 contentMaxWidth 以及 nodeMeta 配置自动进行换行处理。对于超长文本，Document Pager 会根据 contentMaxWidth 以及 nodeMeta 配置自动进行换行处理。对于超长文本，Document Pager 会根据 contentMaxWidth 以及 nodeMeta 配置自动进行换行处理',
+  }
+]);
+// 使用 pages 数据进行分页渲染，这是框架无关的，你完全可以用 vue 的 v-for 渲染，也可以用 react 的 map 遍历渲染节点...
+// pages 是一个数组，其中每一个元素都是对象结构，对象中包含 items 数组，items 数组是行的信息
 ```

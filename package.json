@@ -1,8 +1,9 @@
 {
   "name": "document-pager",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Document pager to help you handle text paging and line wrapping",
-  "main": "index.js",
+  "module": "esm/index.js",
+  "main": "dist/index.bundle.js",
   "type": "module",
   "keywords": [
     "document",
@@ -21,10 +22,11 @@
     "url": "https://github.com/cumt-robin/document-pager/issues"
   },
   "files": [
-    "bin",
-    "src"
+    "dist",
+    "esm"
   ],
   "scripts": {
+    "dev": "rollup -c -w",
     "build": "rollup -c"
   },
   "dependencies": {

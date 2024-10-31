@@ -1,13 +1,20 @@
 class DocumentPager {
     constructor(options) {
-        const { contentMaxWidth = 570, contentMaxHeight = 884, nodeMeta, forceNewPageForH1 = false } = (options || {})
+        const { contentMaxWidth = 570, contentMaxHeight = 884, nodeMeta, forceNewPageForH1 = false, firstLineIndentEm = 2 } = (options || {})
+        if (typeof contentMaxWidth !== 'number' || contentMaxWidth <= 0) {
+            throw new Error('contentMaxWidth is required')
+        }
+        if (typeof contentMaxHeight !== 'number' || contentMaxHeight <= 0) {
+            throw new Error('contentMaxHeight is required')
+        }
         if (!nodeMeta) {
             throw new Error('nodeMeta is required')
         }
         this.contentMaxWidth = contentMaxWidth
         this.contentMaxHeight = contentMaxHeight
         this.nodeMeta = nodeMeta
-        this.forceNewPageForH1 = forceNewPageForH1
+        this.forceNewPageForH1 = !!forceNewPageForH1
+        this.firstLineIndentEm = typeof firstLineIndentEm === 'number' ? firstLineIndentEm : 2
         this.pages = []
         this.nodesIndex = 0
         this.nodeList = []
@@ -35,6 +42,9 @@ class DocumentPager {
         Object.keys(numericStyle).forEach((key) => {
             style[key] = `${numericStyle[key]}px`
         })
+        if (item.type === 'p' && item.indent !== false && item.firstLine) {
+            style['text-indent'] = `${this.firstLineIndentEm}em`
+        }
         return {
             ...style,
             ...(item.customStyle || {})
@@ -65,7 +75,7 @@ class DocumentPager {
         const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen)
         const textMetrics = ctx.measureText(checkContent);
         const firstLine = item.type === 'p' && this.textIndex === 0
-        const lineMaxWidth = firstLine ? this.contentMaxWidth - 2 * fontSize : this.contentMaxWidth
+        const lineMaxWidth = firstLine && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
         if ((textMetrics.width + this.tempBound.width) <= lineMaxWidth) {
             // 能装下
             if (this.textIndex < item.content.length - 1 && (this.textIndex + checkContent.length) < item.content.length) {
@@ -185,7 +195,7 @@ class DocumentPager {
 
         const firstLine = item.type === 'p' && this.textIndex === 0
 
-        const lineMaxWidth = firstLine ? this.contentMaxWidth - 2 * fontSize : this.contentMaxWidth
+        const lineMaxWidth = firstLine && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
 
         if ((textMetrics.width + this.tempBound.width) <= lineMaxWidth) {
             // 还有剩余空间
@@ -388,7 +398,7 @@ class DocumentPager {
                     })
                 }
                 return result
-            })
+            }).filter(item => item.type !== 'p' || (item.type === 'p' && item.content !== ''))
         })
         return this.pages
     }
