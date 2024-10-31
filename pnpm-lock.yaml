@@ -7,7 +7,7 @@ settings:
 importers:
 
   .:
-    dependencies:
+    devDependencies:
       '@rollup/plugin-commonjs':
         specifier: ^28.0.1
         version: 28.0.1(rollup@4.24.3)
