@@ -1,0 +1,41 @@
+{
+  "name": "document-pager",
+  "version": "1.0.0",
+  "description": "Document pager to help you handle text paging and line wrapping",
+  "main": "index.js",
+  "type": "module",
+  "keywords": [
+    "document",
+    "pager"
+  ],
+  "author": "程序员白彬",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cumt-robin/document-pager.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cumt-robin/document-pager/issues"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "fast-glob": "^3.3.2",
+    "rollup": "^4.20.0",
+    "rollup-plugin-delete": "^2.0.0"
+  },
+  "volta": {
+    "node": "18.20.4"
+  }
+}
