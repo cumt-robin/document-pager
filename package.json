@@ -1,6 +1,6 @@
 {
   "name": "document-pager",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Document pager to help you handle text paging and line wrapping",
   "type": "module",
   "module": "esm/index.js",
@@ -9,17 +9,10 @@
     "document",
     "pager"
   ],
-  "author": "程序员白彬",
+  "author": "Tusi",
   "license": "MIT",
   "publishConfig": {
     "access": "public"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/cumt-robin/document-pager.git"
-  },
-  "bugs": {
-    "url": "https://github.com/cumt-robin/document-pager/issues"
   },
   "files": [
     "dist",
