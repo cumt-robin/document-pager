@@ -46,6 +46,7 @@ class DocumentPager {
             style['text-indent'] = `${this.firstLineIndentEm}em`
         }
         return {
+            fontFamily: 'Arial',
             ...style,
             ...(item.customStyle || {})
         }
@@ -313,7 +314,7 @@ class DocumentPager {
         const { style } = this.nodeMeta[item.type]
 
         // 设置样式
-        ctx.font = `${fontSize}px ${style.fontFamily || 'SimSun'}`;
+        ctx.font = `${fontSize}px ${style.fontFamily || 'Arial'}`;
 
         this.checkItem({
             ctx,
