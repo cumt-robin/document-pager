@@ -76,7 +76,7 @@ class DocumentPager {
         const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen)
         const textMetrics = ctx.measureText(checkContent);
         const firstLine = item.type === 'p' && this.textIndex === 0
-        const lineMaxWidth = firstLine && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
+        const lineMaxWidth = firstLine && item.indent !== false && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
         if ((textMetrics.width + this.tempBound.width) <= lineMaxWidth) {
             // 能装下
             if (this.textIndex < item.content.length - 1 && (this.textIndex + checkContent.length) < item.content.length) {
@@ -143,7 +143,7 @@ class DocumentPager {
         const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen)
         const textMetrics = ctx.measureText(checkContent);
         const firstLine = item.type === 'p' && this.textIndex === 0
-        const lineMaxWidth = firstLine ? this.contentMaxWidth - 2 * fontSize : this.contentMaxWidth
+        const lineMaxWidth = firstLine && item.indent !== false && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
         if ((textMetrics.width + this.tempBound.width) <= lineMaxWidth) {
             // 收缩检测过程中，检测到当前文本宽度加上之前内容（也可能没有之前内容）的宽度小于等于一行总宽度，说明能够装下
             this.pages[this.pageIndex].items.push({
@@ -196,7 +196,7 @@ class DocumentPager {
 
         const firstLine = item.type === 'p' && this.textIndex === 0
 
-        const lineMaxWidth = firstLine && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
+        const lineMaxWidth = firstLine && item.indent !== false && this.firstLineIndentEm > 0 ? this.contentMaxWidth - this.firstLineIndentEm * fontSize : this.contentMaxWidth
 
         if ((textMetrics.width + this.tempBound.width) <= lineMaxWidth) {
             // 还有剩余空间
