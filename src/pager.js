@@ -35,6 +35,9 @@ class DocumentPager {
     }
 
     getItemStyle(item) {
+        if (item.type === 'image') {
+            return item.style
+        }
         const style = {
             ...(this.nodeMeta[item.type] && this.nodeMeta[item.type].style || {})
         }
@@ -327,7 +330,42 @@ class DocumentPager {
         })
     }
 
-    calc(nodeList) {
+    getImageRawSize(src) {
+        const image = new Image()
+        image.src = src
+        return new Promise((resolve, reject) => {
+            image.onload = () => resolve({ rawWidth: image.width, rawHeight: image.height, scale: image.width / image.height })
+        })
+    }
+
+    async measureImage(ctx) {
+        const item = this.nodeList[this.nodesIndex]
+        const numericStyle = this.getItemNumericStyle(item)
+        const { marginTop = 0, marginBottom = 0 } = numericStyle
+        const renderMarginTop = marginTop > this.prevMarginBottom ? (marginTop - this.prevMarginBottom) : 0
+        const { rawWidth, rawHeight, scale } = await this.getImageRawSize(item.src)
+        const { width, height } = item
+        const resolvedWidth = width ? width : rawWidth
+        const resolvedHeight = height ? height : width ? (width * scale) : rawHeight
+        const renderWidth = resolvedWidth > this.contentMaxWidth ? this.contentMaxWidth : resolvedWidth
+        const renderHeight = resolvedHeight > this.contentMaxHeight ? this.contentMaxHeight : resolvedHeight
+        const imageBlockHeight = renderHeight + renderMarginTop + marginBottom
+        if (this.tempBound.height + imageBlockHeight >= this.contentMaxHeight) {
+            this.insertNewPage()
+        }
+        this.tempBound.height += imageBlockHeight
+        this.pages[this.pageIndex].items.push({
+            ...item,
+            style: {
+                width: `${renderWidth}px`,
+                height: `${renderHeight}px`,
+                marginTop: `${renderMarginTop}px`,
+                marginBottom: `${marginBottom}px`
+            }
+        })
+        this.prevMarginBottom = marginBottom
+    }
+    async calc(nodeList) {
         this.nodeList = nodeList
         // 创建一个离屏 canvas
         const canvas = document.createElement('canvas')
@@ -337,8 +375,8 @@ class DocumentPager {
                 items: []
             }
         ]
-        while(this.nodesIndex < this.nodeList.length) {
-            if (this.nodeList[this.nodesIndex].type === 'view') {
+        for (let i = 0; i < this.nodeList.length; i++) {
+            if (this.nodeList[i].type === 'view') {
                 // 是一个容器
                 // 1. 先处理容器的 marginTop
                 const marginTop = this.nodeList[this.nodesIndex].customNumericStyle.marginTop || 0
@@ -358,6 +396,9 @@ class DocumentPager {
                     height: this.tempBound.height + marginBottom
                 })
                 this.prevMarginBottom = marginBottom
+                this.nodesIndex++
+            } else if (this.nodeList[this.nodesIndex].type === 'image') {
+                await this.measureImage(ctx)
                 this.nodesIndex++
             } else {
                 this.measureTexts(ctx)
