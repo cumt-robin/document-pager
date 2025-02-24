@@ -1,6 +1,6 @@
 {
   "name": "document-pager",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Document pager to help you handle text paging and line wrapping",
   "type": "module",
   "module": "esm/index.js",
