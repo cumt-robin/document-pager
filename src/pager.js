@@ -35,7 +35,7 @@ class DocumentPager {
     }
 
     getItemStyle(item) {
-        if (item.type === 'image') {
+        if (item.type === 'image' || item.type === 'custom') {
             return item.style
         }
         const style = {
@@ -338,7 +338,7 @@ class DocumentPager {
         })
     }
 
-    async measureImage(ctx) {
+    async measureImage() {
         const item = this.nodeList[this.nodesIndex]
         const numericStyle = this.getItemNumericStyle(item)
         const { marginTop = 0, marginBottom = 0 } = numericStyle
@@ -365,6 +365,24 @@ class DocumentPager {
         })
         this.prevMarginBottom = marginBottom
     }
+
+    measureCustom() {
+        const item = this.nodeList[this.nodesIndex]
+        const { width, height } = item.nodeRect
+        if (this.tempBound.height + height >= this.contentMaxHeight) {
+            this.insertNewPage()
+        }
+        this.tempBound.height += height
+        this.pages[this.pageIndex].items.push({
+            ...item,
+            style: {
+                width: `${width}px`,
+                height: `${height}px`
+            }
+        })
+        this.prevMarginBottom = 0
+    }
+
     async calc(nodeList) {
         this.nodeList = nodeList
         // 创建一个离屏 canvas
@@ -376,7 +394,7 @@ class DocumentPager {
             }
         ]
         for (let i = 0; i < this.nodeList.length; i++) {
-            if (this.nodeList[i].type === 'view') {
+            if (this.nodeList[this.nodesIndex].type === 'view') {
                 // 是一个容器
                 // 1. 先处理容器的 marginTop
                 const marginTop = this.nodeList[this.nodesIndex].customNumericStyle.marginTop || 0
@@ -398,7 +416,10 @@ class DocumentPager {
                 this.prevMarginBottom = marginBottom
                 this.nodesIndex++
             } else if (this.nodeList[this.nodesIndex].type === 'image') {
-                await this.measureImage(ctx)
+                await this.measureImage()
+                this.nodesIndex++
+            } else if (this.nodeList[this.nodesIndex].type === 'custom') {
+                await this.measureCustom()
                 this.nodesIndex++
             } else {
                 this.measureTexts(ctx)
