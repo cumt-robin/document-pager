@@ -24,23 +24,48 @@
     "release": "pnpm build && release-it",
     "release-ci": "pnpm build && release-it --ci",
     "lint": "eslint --ext .js --cache src",
-    "lint-fix": "eslint --ext .js --fix --cache src"
+    "lint-fix": "eslint --ext .js --fix --cache src",
+    "commit": "cz",
+    "prepare": "husky install"
   },
   "devDependencies": {
+    "@eslint/js": "^9.21.0",
     "@release-it/conventional-changelog": "^10.0.0",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^8.10.0",
-    "eslint-plugin-prettier": "^4.2.1",
+    "commitizen": "^4.3.1",
+    "commitlint": "^19.7.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
     "fast-glob": "^3.3.2",
-    "prettier": "^2.8.8",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.4.3",
+    "prettier": "^3.5.3",
     "release-it": "^18.1.2",
     "rollup": "^4.20.0",
     "rollup-plugin-delete": "^2.0.0"
   },
   "volta": {
     "node": "18.20.4"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint --edit $1",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
   }
 }

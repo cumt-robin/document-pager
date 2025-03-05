@@ -1,27 +1,21 @@
 class DocumentPager {
   constructor(options) {
-    const {
-      contentMaxWidth = 570,
-      contentMaxHeight = 884,
-      nodeMeta,
-      forceNewPageForH1 = false,
-      firstLineIndentEm = 2,
-    } = options || {};
-    if (typeof contentMaxWidth !== 'number' || contentMaxWidth <= 0) {
-      throw new Error('contentMaxWidth is required');
+    const { contentMaxWidth = 570, contentMaxHeight = 884, nodeMeta, forceNewPageForH1 = false, firstLineIndentEm = 2 } = options || {};
+    if (typeof contentMaxWidth !== "number" || contentMaxWidth <= 0) {
+      throw new Error("contentMaxWidth is required");
     }
-    if (typeof contentMaxHeight !== 'number' || contentMaxHeight <= 0) {
-      throw new Error('contentMaxHeight is required');
+    if (typeof contentMaxHeight !== "number" || contentMaxHeight <= 0) {
+      throw new Error("contentMaxHeight is required");
     }
     if (!nodeMeta) {
-      throw new Error('nodeMeta is required');
+      throw new Error("nodeMeta is required");
     }
     this.contentMaxWidth = contentMaxWidth;
+
     this.contentMaxHeight = contentMaxHeight;
     this.nodeMeta = nodeMeta;
     this.forceNewPageForH1 = !!forceNewPageForH1;
-    this.firstLineIndentEm =
-      typeof firstLineIndentEm === 'number' ? firstLineIndentEm : 2;
+    this.firstLineIndentEm = typeof firstLineIndentEm === "number" ? firstLineIndentEm : 2;
     this.pages = [];
     this.nodesIndex = 0;
     this.nodeList = [];
@@ -36,14 +30,13 @@ class DocumentPager {
 
   getItemNumericStyle(item) {
     return {
-      ...((this.nodeMeta[item.type] && this.nodeMeta[item.type].numericStyle) ||
-        {}),
+      ...((this.nodeMeta[item.type] && this.nodeMeta[item.type].numericStyle) || {}),
       ...(item.customNumericStyle || {}),
     };
   }
 
   getItemStyle(item) {
-    if (item.type === 'image' || item.type === 'custom') {
+    if (item.type === "image" || item.type === "custom") {
       return item.style;
     }
     const style = {
@@ -53,11 +46,11 @@ class DocumentPager {
     Object.keys(numericStyle).forEach((key) => {
       style[key] = `${numericStyle[key]}px`;
     });
-    if (item.type === 'p' && item.indent !== false && item.firstLine) {
-      style['text-indent'] = `${this.firstLineIndentEm}em`;
+    if (item.type === "p" && item.indent !== false && item.firstLine) {
+      style["text-indent"] = `${this.firstLineIndentEm}em`;
     }
     return {
-      fontFamily: 'Arial',
+      fontFamily: "Arial",
       ...style,
       ...(item.customStyle || {}),
     };
@@ -83,31 +76,17 @@ class DocumentPager {
   }
 
   expandCheck(options = {}) {
-    const {
-      ctx,
-      inline,
-      item,
-      checkLen,
-      nextLineHeight,
-      marginBottom = 0,
-      fontSize,
-    } = options;
-    const checkContent = item.content.slice(
-      this.textIndex,
-      this.textIndex + checkLen
-    );
+    const { ctx, inline, item, checkLen, nextLineHeight, marginBottom = 0, fontSize } = options;
+    const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen);
     const textMetrics = ctx.measureText(checkContent);
-    const firstLine = item.type === 'p' && this.textIndex === 0;
+    const firstLine = item.type === "p" && this.textIndex === 0;
     const lineMaxWidth =
       firstLine && item.indent !== false && this.firstLineIndentEm > 0
         ? this.contentMaxWidth - this.firstLineIndentEm * fontSize
         : this.contentMaxWidth;
     if (textMetrics.width + this.tempBound.width <= lineMaxWidth) {
       // 能装下
-      if (
-        this.textIndex < item.content.length - 1 &&
-        this.textIndex + checkContent.length < item.content.length
-      ) {
+      if (this.textIndex < item.content.length - 1 && this.textIndex + checkContent.length < item.content.length) {
         // 还有剩余长度，继续扩张检测
         return this.expandCheck({
           ctx,
@@ -128,18 +107,13 @@ class DocumentPager {
           inlineStart: inline && this.tempBound.width === 0,
           parentNode: this.nodeList[this.nodesIndex],
         });
-        const inlineFull =
-          inline && textMetrics.width + this.tempBound.width >= lineMaxWidth;
+        const inlineFull = inline && textMetrics.width + this.tempBound.width >= lineMaxWidth;
         if ((inline && inlineFull) || !inline) {
           // TODO: inline 场景，prevMarginBottom 需要以同一行中最大的为准
           this.prevMarginBottom = marginBottom;
         }
         Object.assign(this.tempBound, {
-          width: inline
-            ? inlineFull
-              ? 0
-              : textMetrics.width + this.tempBound.width
-            : 0,
+          width: inline ? (inlineFull ? 0 : textMetrics.width + this.tempBound.width) : 0,
           height: inline
             ? inlineFull
               ? this.tempBound.height + nextLineHeight
@@ -155,10 +129,7 @@ class DocumentPager {
       // 不能，说明最多能装 checkLen - 1
       this.pages[this.pageIndex].items.push({
         ...item,
-        content: item.content.slice(
-          this.textIndex,
-          this.textIndex + checkLen - 1
-        ),
+        content: item.content.slice(this.textIndex, this.textIndex + checkLen - 1),
         firstLine,
         inline,
         inlineStart: inline && this.tempBound.width === 0,
@@ -179,21 +150,13 @@ class DocumentPager {
   }
 
   narrowCheck(options = {}) {
-    const {
-      ctx,
-      inline,
-      item,
-      checkLen,
-      nextLineHeight,
-      marginBottom = 0,
-      fontSize,
-    } = options;
-    const checkContent = item.content.slice(
-      this.textIndex,
-      this.textIndex + checkLen
-    );
+    const { ctx, inline, item, checkLen, nextLineHeight, marginBottom = 0, fontSize } = options;
+    const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen);
+
+    console.log("checkContent", checkContent);
+
     const textMetrics = ctx.measureText(checkContent);
-    const firstLine = item.type === 'p' && this.textIndex === 0;
+    const firstLine = item.type === "p" && this.textIndex === 0;
     const lineMaxWidth =
       firstLine && item.indent !== false && this.firstLineIndentEm > 0
         ? this.contentMaxWidth - this.firstLineIndentEm * fontSize
@@ -243,23 +206,12 @@ class DocumentPager {
   }
 
   checkItem(options = {}) {
-    const {
-      ctx,
-      inline,
-      item,
-      estimateOneLineWords,
-      nextLineHeight,
-      marginBottom = 0,
-      fontSize,
-    } = options;
+    const { ctx, inline, item, estimateOneLineWords, nextLineHeight, marginBottom = 0, fontSize } = options;
     // 按照预估的一行文字数量，测量文本宽度
-    const checkContent = item.content.slice(
-      this.textIndex,
-      this.textIndex + estimateOneLineWords
-    );
+    const checkContent = item.content.slice(this.textIndex, this.textIndex + estimateOneLineWords);
     const textMetrics = ctx.measureText(checkContent);
 
-    const firstLine = item.type === 'p' && this.textIndex === 0;
+    const firstLine = item.type === "p" && this.textIndex === 0;
 
     const lineMaxWidth =
       firstLine && item.indent !== false && this.firstLineIndentEm > 0
@@ -268,10 +220,7 @@ class DocumentPager {
 
     if (textMetrics.width + this.tempBound.width <= lineMaxWidth) {
       // 还有剩余空间
-      if (
-        this.textIndex < item.content.length - 1 &&
-        this.textIndex + checkContent.length < item.content.length
-      ) {
+      if (this.textIndex < item.content.length - 1 && this.textIndex + checkContent.length < item.content.length) {
         // 并且没有到最后的字符串，才可以扩张检测
         const { end, newOneLineWords } = this.expandCheck({
           ctx,
@@ -308,18 +257,13 @@ class DocumentPager {
           inlineStart: inline && this.tempBound.width === 0,
           parentNode: this.nodeList[this.nodesIndex],
         });
-        const inlineFull =
-          inline && textMetrics.width + this.tempBound.width >= lineMaxWidth;
+        const inlineFull = inline && textMetrics.width + this.tempBound.width >= lineMaxWidth;
         if ((inline && inlineFull) || !inline) {
           // TODO: inline 场景，prevMarginBottom 需要以同一行中最大的为准
           this.prevMarginBottom = marginBottom;
         }
         Object.assign(this.tempBound, {
-          width: inline
-            ? inlineFull
-              ? 0
-              : textMetrics.width + this.tempBound.width
-            : 0,
+          width: inline ? (inlineFull ? 0 : textMetrics.width + this.tempBound.width) : 0,
           height: inline
             ? inlineFull
               ? this.tempBound.height + nextLineHeight
@@ -365,16 +309,11 @@ class DocumentPager {
     const { fontSize = 14, marginTop = 0, marginBottom = 0 } = numericStyle;
     const { lineHeight = 1 } = this.getItemStyle(item);
 
-    let nextLineHeight =
-      fontSize * lineHeight +
-      (marginTop > this.prevMarginBottom
-        ? marginTop - this.prevMarginBottom
-        : 0) +
-      marginBottom;
+    let nextLineHeight = fontSize * lineHeight + (marginTop > this.prevMarginBottom ? marginTop - this.prevMarginBottom : 0) + marginBottom;
 
     const estimateOneLineWords = Math.floor(this.contentMaxWidth / fontSize);
 
-    if (this.forceNewPageForH1 && item.type === 'h1' && !item.compact) {
+    if (this.forceNewPageForH1 && item.type === "h1" && !item.compact) {
       if (this.tempBound.height !== 0) {
         // 一级标题直接开新页
         this.insertNewPage();
@@ -399,7 +338,7 @@ class DocumentPager {
     const { style } = this.nodeMeta[item.type];
 
     // 设置样式
-    ctx.font = `${fontSize}px ${style.fontFamily || 'Arial'}`;
+    ctx.font = `${fontSize}px ${style.fontFamily || "Arial"}`;
 
     this.checkItem({
       ctx,
@@ -429,20 +368,13 @@ class DocumentPager {
     const item = this.nodeList[this.nodesIndex];
     const numericStyle = this.getItemNumericStyle(item);
     const { marginTop = 0, marginBottom = 0 } = numericStyle;
-    const renderMarginTop =
-      marginTop > this.prevMarginBottom ? marginTop - this.prevMarginBottom : 0;
+    const renderMarginTop = marginTop > this.prevMarginBottom ? marginTop - this.prevMarginBottom : 0;
     const { rawWidth, rawHeight, scale } = await this.getImageRawSize(item.src);
     const { width, height } = item;
     const resolvedWidth = width ? width : rawWidth;
     const resolvedHeight = height ? height : width ? width * scale : rawHeight;
-    const renderWidth =
-      resolvedWidth > this.contentMaxWidth
-        ? this.contentMaxWidth
-        : resolvedWidth;
-    const renderHeight =
-      resolvedHeight > this.contentMaxHeight
-        ? this.contentMaxHeight
-        : resolvedHeight;
+    const renderWidth = resolvedWidth > this.contentMaxWidth ? this.contentMaxWidth : resolvedWidth;
+    const renderHeight = resolvedHeight > this.contentMaxHeight ? this.contentMaxHeight : resolvedHeight;
     const imageBlockHeight = renderHeight + renderMarginTop + marginBottom;
     if (this.tempBound.height + imageBlockHeight >= this.contentMaxHeight) {
       this.insertNewPage();
@@ -480,19 +412,18 @@ class DocumentPager {
   async calc(nodeList) {
     this.nodeList = nodeList;
     // 创建一个离屏 canvas
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
     this.pages = [
       {
         items: [],
       },
     ];
     for (let i = 0; i < this.nodeList.length; i++) {
-      if (this.nodeList[this.nodesIndex].type === 'view') {
+      if (this.nodeList[this.nodesIndex].type === "view") {
         // 是一个容器
         // 1. 先处理容器的 marginTop
-        const marginTop =
-          this.nodeList[this.nodesIndex].customNumericStyle.marginTop || 0;
+        const marginTop = this.nodeList[this.nodesIndex].customNumericStyle.marginTop || 0;
         Object.assign(this.tempBound, {
           width: 0,
           height: this.tempBound.height + marginTop,
@@ -503,18 +434,17 @@ class DocumentPager {
           this.measureTexts(ctx, true, child);
         });
         // 3. 处理容器的 marginBottom
-        const marginBottom =
-          this.nodeList[this.nodesIndex].customNumericStyle.marginBottom || 0;
+        const marginBottom = this.nodeList[this.nodesIndex].customNumericStyle.marginBottom || 0;
         Object.assign(this.tempBound, {
           width: 0,
           height: this.tempBound.height + marginBottom,
         });
         this.prevMarginBottom = marginBottom;
         this.nodesIndex++;
-      } else if (this.nodeList[this.nodesIndex].type === 'image') {
+      } else if (this.nodeList[this.nodesIndex].type === "image") {
         await this.measureImage();
         this.nodesIndex++;
-      } else if (this.nodeList[this.nodesIndex].type === 'custom') {
+      } else if (this.nodeList[this.nodesIndex].type === "custom") {
         await this.measureCustom();
         this.nodesIndex++;
       } else {
@@ -559,10 +489,7 @@ class DocumentPager {
           }
           return result;
         })
-        .filter(
-          (item) =>
-            item.type !== 'p' || (item.type === 'p' && item.content !== '')
-        );
+        .filter((item) => item.type !== "p" || (item.type === "p" && item.content !== ""));
     });
     return this.pages;
   }
