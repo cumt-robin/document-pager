@@ -2,3 +2,5 @@ node_modules
 dist
 esm
 lib
+.eslintcache
+.DS_Store
