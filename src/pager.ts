@@ -1,6 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 class DocumentPager {
-  constructor(options) {
-    const { contentMaxWidth = 570, contentMaxHeight = 884, nodeMeta, forceNewPageForH1 = false, firstLineIndentEm = 2 } = options || {};
+  contentMaxWidth: number = 570;
+  contentMaxHeight: number = 884;
+  nodeMeta: Record<string, any> = {};
+  forceNewPageForH1: boolean = false;
+  firstLineIndentEm: number = 2;
+  pages: any[] = [];
+  nodesIndex: number = 0;
+  nodeList: any[] = [];
+  textIndex: number = 0;
+  pageIndex: number = 0;
+  tempBound: {
+    width: number;
+    height: number;
+  } = {
+    width: 0,
+    height: 0,
+  };
+  prevMarginBottom: number = 0;
+
+  constructor(options: {
+    contentMaxWidth?: number;
+    contentMaxHeight?: number;
+    nodeMeta?: Record<string, any>;
+    forceNewPageForH1?: boolean;
+    firstLineIndentEm?: number;
+  }) {
+    const { contentMaxWidth, contentMaxHeight, nodeMeta, forceNewPageForH1, firstLineIndentEm } = options || {};
     if (typeof contentMaxWidth !== "number" || contentMaxWidth <= 0) {
       throw new Error("contentMaxWidth is required");
     }
@@ -11,31 +38,20 @@ class DocumentPager {
       throw new Error("nodeMeta is required");
     }
     this.contentMaxWidth = contentMaxWidth;
-
     this.contentMaxHeight = contentMaxHeight;
     this.nodeMeta = nodeMeta;
     this.forceNewPageForH1 = !!forceNewPageForH1;
     this.firstLineIndentEm = typeof firstLineIndentEm === "number" ? firstLineIndentEm : 2;
-    this.pages = [];
-    this.nodesIndex = 0;
-    this.nodeList = [];
-    this.textIndex = 0;
-    this.pageIndex = 0;
-    this.tempBound = {
-      width: 0,
-      height: 0,
-    };
-    this.prevMarginBottom = 0;
   }
 
-  getItemNumericStyle(item) {
+  getItemNumericStyle(item: any) {
     return {
       ...((this.nodeMeta[item.type] && this.nodeMeta[item.type].numericStyle) || {}),
       ...(item.customNumericStyle || {}),
     };
   }
 
-  getItemStyle(item) {
+  getItemStyle(item: any) {
     if (item.type === "image" || item.type === "custom") {
       return item.style;
     }
@@ -68,14 +84,14 @@ class DocumentPager {
     this.prevMarginBottom = 0;
   }
 
-  checkIfNeedNewPage(options = {}) {
+  checkIfNeedNewPage(options: { nextLineHeight: number }) {
     const { nextLineHeight } = options;
     if (this.tempBound.height + nextLineHeight >= this.contentMaxHeight) {
       this.insertNewPage();
     }
   }
 
-  expandCheck(options = {}) {
+  expandCheck(options: any = {}): any {
     const { ctx, inline, item, checkLen, nextLineHeight, marginBottom = 0, fontSize } = options;
     const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen);
     const textMetrics = ctx.measureText(checkContent);
@@ -149,7 +165,7 @@ class DocumentPager {
     }
   }
 
-  narrowCheck(options = {}) {
+  narrowCheck(options: any = {}): any {
     const { ctx, inline, item, checkLen, nextLineHeight, marginBottom = 0, fontSize } = options;
     const checkContent = item.content.slice(this.textIndex, this.textIndex + checkLen);
 
@@ -205,7 +221,7 @@ class DocumentPager {
     }
   }
 
-  checkItem(options = {}) {
+  checkItem(options: any = {}) {
     const { ctx, inline, item, estimateOneLineWords, nextLineHeight, marginBottom = 0, fontSize } = options;
     // 按照预估的一行文字数量，测量文本宽度
     const checkContent = item.content.slice(this.textIndex, this.textIndex + estimateOneLineWords);
@@ -303,7 +319,7 @@ class DocumentPager {
     }
   }
 
-  measureTexts(ctx, inline = false, child) {
+  measureTexts(ctx: CanvasRenderingContext2D, inline?: boolean, child?: any) {
     const item = inline ? child : this.nodeList[this.nodesIndex];
     const numericStyle = this.getItemNumericStyle(item);
     const { fontSize = 14, marginTop = 0, marginBottom = 0 } = numericStyle;
@@ -351,7 +367,7 @@ class DocumentPager {
     });
   }
 
-  getImageRawSize(src) {
+  getImageRawSize(src: string): Promise<{ rawWidth: number; rawHeight: number; scale: number }> {
     const image = new Image();
     image.src = src;
     return new Promise((resolve) => {
@@ -409,11 +425,11 @@ class DocumentPager {
     this.prevMarginBottom = 0;
   }
 
-  async calc(nodeList) {
+  async calc(nodeList: any[]) {
     this.nodeList = nodeList;
     // 创建一个离屏 canvas
     const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
     this.pages = [
       {
         items: [],
@@ -430,7 +446,7 @@ class DocumentPager {
         });
         this.prevMarginBottom = 0;
         // 2. 处理子节点
-        this.nodeList[this.nodesIndex].children.forEach((child) => {
+        this.nodeList[this.nodesIndex].children.forEach((child: any) => {
           this.measureTexts(ctx, true, child);
         });
         // 3. 处理容器的 marginBottom
@@ -453,9 +469,9 @@ class DocumentPager {
       }
     }
     // TODO: 对于inline模式换行的情况，应该要考虑多行容器的 marginTop 和 marginBottom，只让首尾生效
-    let tempInlineContainer = null;
+    let tempInlineContainer: any = null;
     this.pages.forEach((page) => {
-      page.items = page.items.reduce((prev, curr) => {
+      page.items = page.items.reduce((prev: any, curr: any) => {
         if (curr.inline) {
           if (curr.inlineStart) {
             tempInlineContainer = {
@@ -474,13 +490,13 @@ class DocumentPager {
     });
     this.pages.forEach((page) => {
       page.items = page.items
-        .map((item) => {
+        .map((item: any) => {
           const result = {
             ...item,
             style: this.getItemStyle(item),
           };
           if (result.children && result.children.length > 0) {
-            result.children = result.children.map((child) => {
+            result.children = result.children.map((child: any) => {
               return {
                 ...child,
                 style: this.getItemStyle(child),
@@ -489,7 +505,7 @@ class DocumentPager {
           }
           return result;
         })
-        .filter((item) => item.type !== "p" || (item.type === "p" && item.content !== ""));
+        .filter((item: any) => item.type !== "p" || (item.type === "p" && item.content !== ""));
     });
     return this.pages;
   }
