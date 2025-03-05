@@ -102,6 +102,15 @@ const pages = await pager.calc([
       marginBottom: 30,
     },
   },
+  // 自定义节点，自行计算和给出高度配置，参与分页计算。依据 key 或者其他自定义字段进行渲染
+  {
+    type: "custom",
+    nodeRect: {
+      height: 300,
+    },
+    key: "custom-node-1",
+    // 可自行扩展其他字段，比如 customData 等
+  },
 ]);
 // 使用 pages 数据进行分页渲染，这是框架无关的，你完全可以用 vue 的 v-for 渲染，也可以用 react 的 map 遍历渲染节点...
 // pages 是一个数组，其中每一个元素都是对象结构，对象中包含 items 数组，items 数组是行的信息

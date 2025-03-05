@@ -20,13 +20,17 @@
   ],
   "scripts": {
     "dev": "rollup -c -w",
-    "build": "rollup -c"
+    "build": "rollup -c",
+    "release": "pnpm build && release-it",
+    "release-ci": "pnpm build && release-it --ci"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.0",
     "@rollup/plugin-commonjs": "^28.0.1",
     "@rollup/plugin-node-resolve": "^15.3.0",
     "@rollup/plugin-terser": "^0.4.4",
     "fast-glob": "^3.3.2",
+    "release-it": "^18.1.2",
     "rollup": "^4.20.0",
     "rollup-plugin-delete": "^2.0.0"
   },
