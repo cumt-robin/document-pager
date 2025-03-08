@@ -4,7 +4,7 @@
   "description": "Document pager to help you handle text paging and line wrapping",
   "type": "module",
   "module": "esm/index.js",
-  "main": "dist/index.bundle.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "keywords": [
     "document",
