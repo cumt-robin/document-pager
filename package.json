@@ -27,9 +27,11 @@
     "lint": "eslint --ext .ts --cache src",
     "lint-fix": "eslint --ext .ts --fix --cache src",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@eslint/js": "^9.21.0",
     "@release-it/conventional-changelog": "^10.0.0",
     "@rollup/plugin-commonjs": "^28.0.1",
@@ -56,12 +58,6 @@
   },
   "volta": {
     "node": "18.20.4"
-  },
-  "husky": {
-    "hooks": {
-      "commit-msg": "commitlint --edit $1",
-      "pre-commit": "lint-staged"
-    }
   },
   "lint-staged": {
     "*.js": [
