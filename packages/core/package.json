@@ -1,0 +1,39 @@
+{
+  "name": "document-pager",
+  "version": "2.0.2",
+  "description": "Document pager to help you handle text paging and line wrapping",
+  "type": "module",
+  "module": "esm/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "document pager",
+    "text pager"
+  ],
+  "author": "Tusi",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist",
+    "esm"
+  ],
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "release": "pnpm build && release-it",
+    "release-ci": "pnpm build && release-it --ci"
+  },
+  "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.0",
+    "@rollup/plugin-commonjs": "^28.0.1",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "fast-glob": "^3.3.2",
+    "release-it": "^18.1.2",
+    "rollup": "^4.20.0",
+    "rollup-plugin-delete": "^2.0.0",
+    "typescript": "^5.8.2"
+  }
+}

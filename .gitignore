@@ -4,3 +4,4 @@ esm
 lib
 .eslintcache
 .DS_Store
+.rollup.cache
